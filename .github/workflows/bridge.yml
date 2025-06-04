@@ -1,0 +1,45 @@
+name: bridge
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/bridge.yml'
+      - 'bridge/**'
+      - '!**/*.md'
+  pull_request:
+    paths:
+      - '.github/workflows/bridge.yml'
+      - 'bridge/**'
+      - '!**/*.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    if: |
+      ${{ github.event_name == 'pull_request' }}
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    name: 'Test bridge'
+
+    steps:
+      - name: Checkout csolution-rpc repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: codegen
+
+      - name: Run linter
+        run: npm run lint
+        working-directory: codegen
