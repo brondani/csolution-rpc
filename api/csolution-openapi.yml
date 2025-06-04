@@ -1,0 +1,735 @@
+openapi: 3.1.0
+info:
+  title: csolution rpc
+  version: 0.0.1
+  description: Specification of remote procedure call methods for CMSIS csolution integration 
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /rpc/GetVersion:
+    post:
+      summary: Get version
+      description: Get version of csolution rpc server
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/GetVersionRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/GetVersionResponse'}}}
+  /rpc/Shutdown:
+    post:
+      summary: Shutdown
+      description: Shutdown csolution rpc server
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/ShutdownRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/ShutdownResponse'}}}
+  /rpc/Apply:
+    post:
+      summary: Apply component selection changes
+      description: Apply component selection changes for the given context
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/ApplyRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/ApplyResponse'}}}
+  /rpc/LoadPacks:
+    post:
+      summary: Load installed and local packs
+      description: Load packs indexed in the CMSIS_PACK_ROOT
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/LoadPacksRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/LoadPacksResponse'}}}
+  /rpc/LoadSolution:
+    post:
+      summary: Load solution
+      description: Load solution
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/LoadSolutionRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/LoadSolutionResponse'}}}
+  /rpc/GetUsedItems:
+    post:
+      summary: Get used items
+      description: Get used items
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/GetUsedItemsRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/GetUsedItemsResponse'}}}
+  /rpc/GetPacksInfo:
+    post:
+      summary: Get packs information
+      description: Get installed and local packs information
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/GetPacksInfoRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/GetPacksInfoResponse'}}}
+  /rpc/GetComponentsTree:
+    post:
+      summary: Get components tree
+      description: Get tree of filtered components, APIs, bundles and taxonomy information
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/GetComponentsTreeRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/GetComponentsTreeResponse'}}}
+  /rpc/SelectComponent:
+    post:
+      summary: Select component
+      description: Select component
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/SelectComponentRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/SelectComponentResponse'}}}
+  /rpc/SelectVariant:
+    post:
+      summary: Select variant
+      description: Select variant
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/SelectVariantRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/SelectVariantResponse'}}}
+  /rpc/SelectVersion:
+    post:
+      summary: Select version
+      description: Select version
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/SelectVersionRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/SelectVersionResponse'}}}
+  /rpc/SelectBundle:
+    post:
+      summary: Select bundle
+      description: Select bundle
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/SelectBundleRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/SelectBundleResponse'}}}
+  /rpc/ValidateComponents:
+    post:
+      summary: Validate components list
+      description: Validate components list
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/ValidateComponentsRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/ValidateComponentsResponse'}}}
+  /rpc/GetLogMessages:
+    post:
+      summary: Get logged messages
+      description: Get info, errors and warnings logged during processing
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/GetLogMessagesRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/GetLogMessagesResponse'}}}
+
+components:
+  schemas:
+    Common:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identifier
+        description:
+          type: string
+          description: Description
+        doc:
+          type: string
+          description: Documentation
+      required:
+        - id
+    Pack:
+      allOf:
+        - $ref: '#/components/schemas/Common'
+        - properties:
+            overview:
+              type: string
+              description: Pack overview
+            used:
+              type: boolean
+              description: True when pack is used in the current context
+            references:
+              type: array
+              description: List of yml files where the pack is referenced
+              items:
+                type: string
+    PacksInfo:
+      type: object
+      properties:
+        packs:
+          type: array
+          description: List of packs information
+          items:
+            $ref: '#/components/schemas/Pack'
+      required:
+        - packs
+    Component:
+      allOf:
+        - $ref: '#/components/schemas/Common'
+        - properties:
+            from-pack:
+              type: string
+              description: Pack that defines this component
+            implements:
+              type: string
+              description: Refers to the API that the component is based on
+            maxInstances:
+              type: integer
+              description: Maximum of supported component instances
+          required:
+            - from-pack
+    CtItem:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of element
+      required:
+        - name
+    ComponentInstance:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identifier
+        selectedCount:
+          type: integer
+          description: Number of selected instances
+        resolvedComponent:
+          $ref: '#/components/schemas/Component'
+        layer:
+          type: string
+          description: Layer
+      required:
+        - id
+        - selectedCount
+    CtVariant:
+      allOf:
+        - $ref: '#/components/schemas/CtItem'
+        - type: object
+          properties:
+            components:
+              type: array
+              description: Version-sorted components
+              items:
+                $ref: '#/components/schemas/Component'
+          required:
+            - components
+    CtAggregate:
+      allOf:
+        - $ref: '#/components/schemas/CtItem'
+        - type: object
+          properties:
+            id:
+              type: string
+              description: Identifier
+            activeVariant:
+              type: string
+              description: Variant
+            activeVersion:
+              type: string
+              description: Version
+            selectedCount:
+              type: integer
+              description: Number of selected instances
+            variants:
+              type: array
+              items:
+                $ref: '#/components/schemas/CtVariant'
+            layer:
+              type: string
+              description: Layer
+          required:
+            - id
+            - variants
+    CtTreeItem:
+      allOf:
+        - $ref: '#/components/schemas/CtItem'
+        - type: object
+          properties:
+            groups:
+              type: array
+              items:
+                $ref: '#/components/schemas/CtGroup'
+            aggregates:
+              type: array
+              items:
+                $ref: '#/components/schemas/CtAggregate'
+    Api:
+      description: Api
+      allOf:
+        - $ref: '#/components/schemas/Common'
+    Taxonomy:
+      description: Taxonomy
+      allOf:
+        - $ref: '#/components/schemas/Common'
+    CtGroup:
+      allOf:
+        - $ref: '#/components/schemas/CtTreeItem'
+        - type: object
+          properties:
+            api:
+              $ref: '#/components/schemas/Api'
+            taxonomy:
+              $ref: '#/components/schemas/Taxonomy'
+    Bundle:
+      description: Bundle
+      allOf:
+        - $ref: '#/components/schemas/Common'
+    CtBundle:
+      allOf:
+        - $ref: '#/components/schemas/CtTreeItem'
+        - type: object
+          properties:
+            bundle:
+              $ref: '#/components/schemas/Bundle'
+    CtClass:
+      allOf:
+        - $ref: '#/components/schemas/CtItem'
+        - type: object
+          properties:
+            taxonomy:
+              $ref: '#/components/schemas/Taxonomy'
+            activeBundle:
+              type: string
+            bundles:
+              type: array
+              items:
+                $ref: '#/components/schemas/CtBundle'
+          required:
+            - bundles
+    CtRoot:
+      type: object
+      description: Root of Component Tree
+      properties:
+        classes:
+          type: array
+          description: Array of Component Classes
+          items:
+            $ref: '#/components/schemas/CtClass'
+      required:
+        - classes
+    Condition:
+      type: object
+      properties:
+        expression:
+          type: string
+          description: Condition expression (accept, require, deny ...)
+        aggregates:
+          type: array
+          description: List of aggregates related to this condition
+          items:
+            type: string
+      required:
+        - expression
+    Result:
+      type: object
+      properties:
+        result:
+          type: string
+          description: 'Condition result: https://github.com/Open-CMSIS-Pack/devtools/blob/tools/projmgr/2.8.0/libs/rtemodel/include/RteItem.h#L78-L95'
+        id:
+          type: string
+          description: Component or API identifier
+        aggregates:
+          type: array
+          description: List of aggregates related to this result
+          items:
+            type: string
+        conditions:
+          type: array
+          description: List of conditions related to this result
+          items:
+            $ref: '#/components/schemas/Condition'
+      required:
+        - id
+        - result
+    Results:
+      type: object
+      properties:
+        validation:
+          type: array
+          items:
+            $ref: '#/components/schemas/Result'
+    UsedItems:
+      type: object
+      properties:
+        components:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComponentInstance'
+        packs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pack'
+      required:
+        - components
+        - packs
+    LogMessages:
+      type: object
+      properties:
+        info:
+          type: array
+          items:
+            type: string
+        errors:
+          type: array
+          items:
+            type: string
+        warnings:
+          type: array
+          items:
+            type: string
+
+    GetVersionRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request'
+        - properties:
+            method:
+              type: string
+              const: GetVersion
+    GetVersionResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              type: string
+    ShutdownRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request'
+        - properties:
+            method:
+              type: string
+              const: Shutdown
+    ShutdownResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              type: boolean
+    ApplyRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: Apply
+            params:
+              type: object
+              properties:
+                context:
+                  type: string
+              required:
+                - context
+    ApplyResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              type: boolean
+    LoadPacksRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request'
+        - properties:
+            method:
+              type: string
+              const: LoadPacks
+    LoadPacksResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              type: boolean
+    LoadSolutionRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: LoadSolution
+            params:
+              type: object
+              properties:
+                solution:
+                  type: string
+              required:
+                - solution
+    LoadSolutionResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              type: boolean
+    GetPacksInfoRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: GetPacksInfo
+            params:
+              type: object
+              properties:
+                context:
+                  type: string
+              required:
+                - context
+    GetPacksInfoResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              $ref: '#/components/schemas/PacksInfo'
+    GetUsedItemsRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: GetUsedItems
+            params:
+              type: object
+              properties:
+                context:
+                  type: string
+              required:
+                - context
+    GetUsedItemsResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              $ref: '#/components/schemas/UsedItems'
+    GetComponentsTreeRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: ComponentsTree
+            params:
+              type: object
+              properties:
+                context:
+                  type: string
+                all:
+                  type: boolean
+              required:
+                - context
+                - all
+    GetComponentsTreeResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              $ref: '#/components/schemas/CtRoot'
+    SelectComponentRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: SelectComponent
+            params:
+              type: object
+              properties:
+                context:
+                  type: string
+                id:
+                  type: string
+                count:
+                  type: integer
+              required:
+                - context
+                - id
+                - count
+    SelectComponentResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              type: boolean
+    SelectVariantRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: SelectVariant
+            params:
+              type: object
+              properties:
+                context:
+                  type: string
+                id:
+                  type: string
+                variant:
+                  type: string
+              required:
+                - context
+                - id
+                - variant
+    SelectVariantResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              type: boolean
+    SelectVersionRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: SelectVersion
+            params:
+              type: object
+              properties:
+                context:
+                  type: string
+                id:
+                  type: string
+                version:
+                  type: string
+              required:
+                - context
+                - id
+                - version
+    SelectVersionResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              type: boolean
+    SelectBundleRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: SelectBundle
+            params:
+              type: object
+              properties:
+                context:
+                  type: string
+                cclass:
+                  type: string
+                bundle:
+                  type: string
+              required:
+                - context
+                - cclass
+                - bundle
+    SelectBundleResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              type: boolean
+    ValidateComponentsRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: ValidateComponents
+            params:
+              type: object
+              properties:
+                context:
+                  type: string
+              required:
+                - context
+    ValidateComponentsResponse:
+       allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              $ref: '#/components/schemas/Results'
+    GetLogMessagesRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request'
+        - properties:
+            method:
+              type: string
+              const: GetLogMessages
+    GetLogMessagesResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              $ref: '#/components/schemas/LogMessages'
+
+x-jsonrpc-envelope-request:
+  allOf:
+    - $ref: '#/x-jsonrpc-envelope'
+    - required:
+        - method
+
+x-jsonrpc-envelope-request-with-params:
+  allOf:
+    - $ref: '#/x-jsonrpc-envelope-request'
+    - required:
+        - params
+
+x-jsonrpc-envelope-response:
+  allOf:
+    - $ref: '#/x-jsonrpc-envelope'
+    - required:
+        - result
+
+x-jsonrpc-envelope:
+  type: object
+  properties:
+    jsonrpc:
+      type: string
+      const: '2.0'
+    id:
+      type: number
+  required:
+    - jsonrpc
+    - id

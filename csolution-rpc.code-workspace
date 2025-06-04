@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "bridge"
+		},
+		{
+			"path": "codegen"
+		},
+		{
+			"path": "api"
+		}
+	],
+	"settings": {}
+}
