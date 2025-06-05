@@ -81,12 +81,16 @@ jobs:
           name: codegen-rpc-interfaces
           path: generated
 
+      - name: Zip generated files
+        run: zip -r csolution-rpc.zip *
+        working-directory: generated
+
       - name: Attach files to release assets
         id: release_assets
         uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: generated/*
+          file: generated/csolution-rpc.zip
           tag: ${{ github.ref }}
           overwrite: true
-          file_glob: true
+          asset_name: csolution-rpc.zip
