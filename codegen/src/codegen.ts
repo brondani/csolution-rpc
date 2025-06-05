@@ -388,7 +388,7 @@ using namespace jsonrpccxx;\n`;
       } else {
         if (struct.extends) {
           const baseClasses = struct.extends.join(', ');
-          content += `type ${name} = ${baseClasses};\n`;
+          content += `export type ${name} = ${baseClasses};\n`;
         }
       }
     }
