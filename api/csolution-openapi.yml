@@ -98,6 +98,50 @@ paths:
         '200':
           description: OK
           content: {application/json: {schema: {$ref: '#/components/schemas/GetPacksInfoResponse'}}}
+  /rpc/GetDeviceList:
+    post:
+      summary: Get device list
+      description: Get list of filtered devices
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/GetDeviceListRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/GetDeviceListResponse'}}}
+  /rpc/GetDeviceInfo:
+    post:
+      summary: Get device data for specified device
+      description: Get device data for specified device
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/GetDeviceInfoRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/GetDeviceInfoResponse'}}}
+  /rpc/GetBoardList:
+    post:
+      summary: Get board list
+      description: Get list of filtered boards
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/GetBoardListRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/GetBoardListResponse'}}}
+  /rpc/GetBoardInfo:
+    post:
+      summary: Get data for specified board
+      description: Get data for specified board
+      tags: [/rpc]
+      requestBody:
+        content: {application/json: {schema: {$ref: '#/components/schemas/GetBoardInfoRequest'}}}
+      responses:
+        '200':
+          description: OK
+          content: {application/json: {schema: {$ref: '#/components/schemas/GetBoardInfoResponse'}}}
   /rpc/GetComponentsTree:
     post:
       summary: Get components tree
@@ -192,6 +236,13 @@ components:
           description: Documentation
       required:
         - id
+    PackElement:
+      allOf:
+        - $ref: '#/components/schemas/Common'
+        - properties:
+            pack:
+              type: string
+              description: Originating pack ID
     Pack:
       allOf:
         - $ref: '#/components/schemas/Common'
@@ -218,6 +269,124 @@ components:
                 $ref: '#/components/schemas/Pack'
           required:
             - packs
+    DebugInterface:
+      type: object
+      properties:
+        adapter:
+          type: string
+          description: Debug adapter type
+        connector:
+          type: string
+          description: Connector type
+      required:
+        - adapter
+    Processor:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Processor name within device, optional
+        core:
+          type: string
+          description: Processor core type
+        attributes:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - core
+    Memory:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Memory name/ID
+        size:
+          type: string
+          description: Memory size
+        access:
+          type: string
+          description: Memory access permissions
+      required:
+        - core
+    Device:
+      allOf:
+        - $ref: '#/components/schemas/PackElement'
+        - properties:
+            family:
+              type: string
+              description: Device family
+            subFamily:
+              type: string
+              description: Device subfamily, optional
+            processors:
+              type: array
+              items:
+                $ref: '#/components/schemas/Processor'
+            memories:
+              type: array
+              items:
+                $ref: '#/components/schemas/Memory'
+    DeviceList:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResult'
+        - properties:
+            devices:
+              type: array
+              description: List of devices
+              items:
+                $ref: '#/components/schemas/Device'
+          required:
+            - devices
+    DeviceInfo:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResult'
+        - properties:
+            device:
+              $ref: '#/components/schemas/Device'
+          required:
+            - device
+    Board:
+      allOf:
+        - $ref: '#/components/schemas/PackElement'
+        - properties:
+            image:
+              type: string
+              description: Link to file or URL with board image
+            devices:
+              type: array
+              description: List of mounted and compatible devices
+              items:
+                $ref: '#/components/schemas/Device'
+            memories:
+              type: array
+              items:
+                $ref: '#/components/schemas/Memory'
+            debugInterfaces:
+              type: array
+              description: List of supported debug interfaces
+              items:
+                $ref: '#/components/schemas/DebugInterface'
+
+    BoardList:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResult'
+        - properties:
+            boards:
+              type: array
+              description: List of boards
+              items:
+                $ref: '#/components/schemas/Board'
+          required:
+            - boards
+    BoardInfo:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResult'
+        - properties:
+            board:
+              $ref: '#/components/schemas/Board'
+          required:
+            - board
     Component:
       allOf:
         - $ref: '#/components/schemas/Common'
@@ -452,7 +621,6 @@ components:
           required:
             - components
             - packs
-
     LogMessages:
       allOf:
         - $ref: '#/components/schemas/SuccessResult'
@@ -477,7 +645,6 @@ components:
             method:
               type: string
               const: GetVersion
-
     GetVersionResult:
       allOf:
         - $ref: '#/components/schemas/SuccessResult'
@@ -617,6 +784,98 @@ components:
         - properties:
             result:
               $ref: '#/components/schemas/UsedItems'
+    GetDeviceListRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: GetDeviceList
+            params:
+              type: object
+              properties:
+                context:
+                  type: string
+                  description: Optional context to limit the list to packs used in the context
+                namePattern:
+                  type: string
+                  description: Optional device name pattern containing wildcards
+                vendor:
+                  type: string
+                  description: Optional vendor name to limit device list to the requested vendor
+    GetDeviceListResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              $ref: '#/components/schemas/DeviceList'
+    GetDeviceInfoRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: GetDeviceInfo
+            params:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Device ID in the format Vendor::Name, vendor prefix is optional
+              required:
+                - id
+    GetDeviceInfoResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              $ref: '#/components/schemas/DeviceInfo'
+    GetBoardListRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: GetBoardList
+            params:
+              type: object
+              properties:
+                context:
+                  type: string
+                  description: Optional context to limit the list to packs used in the context
+                namePattern:
+                  type: string
+                  description: Optional device name pattern containing wildcards
+                vendor:
+                  type: string
+                  description: Optional vendor name to limit device list to the requested vendor
+    GetBoardListResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              $ref: '#/components/schemas/BoardList'
+    GetBoardInfoRequest:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-request-with-params'
+        - properties:
+            method:
+              type: string
+              const: GetBoardInfo
+            params:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Board  ID in the format Vendor::Name:Revision, vendor prefix is optional.
+              required:
+                - id
+    GetBoardInfoResponse:
+      allOf:
+        - $ref: '#/x-jsonrpc-envelope-response'
+        - properties:
+            result:
+              $ref: '#/components/schemas/BoardInfo'
     GetComponentsTreeRequest:
       allOf:
         - $ref: '#/x-jsonrpc-envelope-request-with-params'
